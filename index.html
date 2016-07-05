@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Rock Test</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
+    
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: whitesmoke;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            width: 80%;
+            margin: 10px auto 10px auto;
+        }
+        h1 {
+            display: inline-block;
+            margin-right: 20px;
+            color: #001323;
+        }
+        h2 {
+            display: inline-block;
+            color: #001323;
+        }
+        #map {
+            width: 80%;
+            height: 540px;
+            margin: 10px 10%;
+            background: whitesmoke;
+            border: 2px solid #dddedf;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        
+    </style>
+</head>
+
+<body>
+
+
+    <div id='map'></div>
+
+    <footer>
+        <p>Map authored by YOUR NAME</p>
+    </footer>
+
+    
+    <script src="arm.geojson"></script>
+    <script src="bol.geojson"></script>
+    <script src="ecu.geojson"></script>
+    <script src="eth.geojson"></script>
+    <script src="geo.geojson"></script>
+    <script src="hnd.geojson"></script>
+    <script src="ind.geojson"></script>
+    <script src="ken.geojson"></script>
+    <script src="kgz.geojson"></script>
+    <script src="khm.geojson"></script>
+    <script src="lka.geojson"></script>
+    <script src="mli.geojson"></script>
+    <script src="mmr.geojson"></script>
+    <script src="mng.geojson"></script>
+    <script src="mwi.geojson"></script>
+    <script src="nga.geojson"></script>
+    <script src="per.geojson"></script>
+    <script src="pry.geojson"></script>
+    <script src="phl.geojson"></script>
+    <script src="tjk.geojson"></script>
+    <script src="tza.geojson"></script>
+    <script src="rwa.geojson"></script>
+    <script src="uga.geojson"></script>
+    <script src="zmb.geojson"></script>
+
+    
+    
+    <script>
+        
+        var options = {
+            center: [40.0691, 45.0382],
+            zoom: 10,
+            zoomControl: false
+        }
+        var map = L.map('map', options);
+        
+        map.addControl( L.control.zoom({ position: 'topright' }));
+        
+//        L.geoJson(arm).addTo(map);
+//        var armBounds = map.getBounds();
+//        console.log(armBounds);
+        
+        var ctry = new L.featureGroup();
+        L.geoJson(arm).addTo(ctry);
+        L.geoJson(bol).addTo(ctry);
+        L.geoJson(ecu).addTo(ctry);
+        L.geoJson(eth).addTo(ctry);
+        L.geoJson(geo).addTo(ctry);
+        L.geoJson(hnd).addTo(ctry);
+        L.geoJson(ind).addTo(ctry);
+        L.geoJson(ken).addTo(ctry);
+        L.geoJson(kgz).addTo(ctry);
+        L.geoJson(lka).addTo(ctry);
+        L.geoJson(mli).addTo(ctry);
+        L.geoJson(mwi).addTo(ctry);
+        L.geoJson(mmr).addTo(ctry);
+        L.geoJson(mng).addTo(ctry);
+        L.geoJson(nga).addTo(ctry);
+        L.geoJson(per).addTo(ctry);
+        L.geoJson(pry).addTo(ctry);
+        L.geoJson(phl).addTo(ctry);
+        L.geoJson(rwa).addTo(ctry);
+        L.geoJson(tjk).addTo(ctry);
+        L.geoJson(tza).addTo(ctry);
+        L.geoJson(uga).addTo(ctry);
+        L.geoJson(zmb).addTo(ctry);
+        L.geoJson(khm).addTo(ctry);
+        
+        ctry.addTo(map);
+        
+//        var bounds = ctry.getBounds();
+//        console.log(bounds);
+        
+        var b = map.fitBounds(ctry.getBounds());
+        console.log(b);
+        
+
+
+    </script>
+    
+</body>
+
+</html>
