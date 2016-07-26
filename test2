@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8 />
+    <title>Rock Test</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: white;
+            font-family: Lato, sans-serif;
+            color: #0D0000;
+        }
+        header {
+            padding: 6px 10%;
+        }
+        #map {
+            position: absolute;
+            width: 66%;
+            top: 0;
+            bottom: 0;
+        }
+        footer {
+            padding: 6px 10%;
+            width: 80%;
+        }
+        p {
+            font-size: 1em;
+            color: #001323;
+        }
+        .leaflet-popup-content-wrapper {
+            background: #3F3250; 
+            color: #C0B3A0;
+            text-align: center;
+        }
+        .leaflet-popup-content-wrapper h5{
+            color: #E14658;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+        .leaflet-popup-tip-container {
+            color: #3F3250; 
+        }
+        .leaflet-popup-tip {
+            background: #3F3250;
+        }
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: #3F3250;
+            color: #C0B3A0; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            width: 145px;
+            border: 2px solid #E14658;
+            border-radius: 5px; 
+        }
+        .legend h3 {
+            font-size: 1em;
+            font-weight: bold;
+            line-height: 1.3em;
+            color: #C0B3A0;
+            margin: 0;
+        }
+        .legend ul {
+            margin: 10px 0 0 0;
+            padding: 0;
+        }
+        .legend li {
+            list-style-type: none;
+            height: 22px;
+            color: #C0B3A0;
+            font-size: .85em;
+        }
+        .legend span {
+            width: 30px;
+            height: 20px;
+            float: left;
+            margin-right: 5px;
+        }
+        #ui-controls {
+            width: 186px;   
+            padding: 8px 25px 8px 15px;
+            background: #3F3250;
+            border: 2px solid #E14658;
+            border-radius: 5px; 
+            color: #C0B3A0;
+        }
+        .year-slider {
+            width: 100%;
+            color: #3F3250; 
+        }
+        #side-panel {
+            position: absolute;
+            left: 66%;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 33%;
+            background: #C0B3A0;
+            border-left: 2px solid #E14658;
+            overflow-y: scroll;
+        }
+        h1 {
+            padding: 8px 15px 8px 15px;
+            margin: 0;
+            background: #3F3250;
+            width: 100%
+            font-weight: 350;
+            font-size: 1.2em;
+            text-align: center;
+            color: #E14658;
+        }
+        h2 {
+            margin: 0;
+            padding: 8px 15px 8px 15px;
+            color: #E14658;
+            font-weight: 500;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        h4 {
+            padding: 8px 15px 8px 15px;
+            margin: 0;
+            background: #3F3250;
+            width: 100%
+            font-weight: 250;
+            font-size: 1.1em;
+            text-align: center;
+            color: #E14658;
+            border-bottom: 10px solid #E14658;
+        }
+        #side-panel p {
+            margin: 8px 0 4px; 
+            padding: 0 25px 0 15px;
+            color: #22252C;
+            text-align: left;
+            font-size: .9em; 
+            line-height: 1.3em;
+        }
+        #side-panel p:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        #side-panel img {
+            float: center;
+            width: 100%;
+        }
+        .info {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: #3F3250;
+            color: #C0B3A0; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border: 2px solid #E14658;
+            border-radius: 5px;             
+            text-align: right;   
+        }
+        .info h3 {
+            margin: 0;
+            color: #E14658; 
+        }
+        #ui-controls .min {
+            float: left;   
+        }
+        #ui-controls .max {
+            float: right;
+            margin-right: -15px;
+        }
+        .year-slider {
+            width: 100%;
+        }
+        
+        #crops-list {
+            color: #22252C;
+            font-size: .75em;
+            columns: 2; 
+            list-style-type: square;
+            list-style-position: inside;
+            padding-left: 15px;
+        }
+        #user-interaction {
+            position: absolute; 
+            left: 4%; 
+            top: 0;
+        }
+        #user-interaction label {
+            color: white;
+            font-size: 0.9em;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id='map'></div>
+    
+    <div id='side-panel'>
+    <h1>Monthly Agriculture Insurance Calendar</h1>
+    <h4>Drought Exposure in Ethiopia</h4>
+    <h2>Reading this Map</h2>
+        <p>This map displays the drought exposure for each adminsitrative region in Ethiopia for each month of the year. Each region's drought exposure proportions for the year sum to 1, so each MAgIC proportion is a <b>relative measure of drought exposure</b> (a value of 0.1 means that 10% of that region's drought exposure occurs in the month of interest). Scrolling through the slider on the bottom left of the map scrolls through each month of the year; this month is displayed in the legend title. Clicking on each region reveals its drought exposure proportion for the selected month. Hovering over each region displays an info window that shows the drought exposure proportions for each month.</p>
+    <h2>About MAgIC</h2>
+        <p>The Monthly Agriculture Insurance Calendar (MAgIC) was created by GlobalAgRisk, Inc. as a food security tool for developing nations. It could potentially be used as a tool to help farmers choose when to insure themselves against crop failure in times of drought.</p>
+        <p>MAgIC works by attempting to determine when a country's crops are most vulnerable to drought. While many food security tools already exist, MAgIC is unique in its breadth of focus. Instead of focusing only on the most prominent/"important" crop in a country or region, we have included weighted measures for 25 different crops, listed below:</p>
+        
+        <ul id="crops-list">
+            <li>Barley</li>
+            <li>Cabbage</li>
+            <li>Carrot</li>
+            <li>Chickpea</li>
+            <li>Cowpea</li>
+            <li>Cotton</li>
+            <li>Groundnut</li>
+            <li>Maize</li>
+            <li>Millet</li>
+            <li>Oat</li>
+            <li>Onion</li>
+            <li>Pigeonpea</li>
+            <li>Rapeseed</li>
+            <li>Rye</li>
+            <li>Sorghum</li>
+            <li>Soybean</li>
+            <li>Sugarbeet</li>
+            <li>Sunflower</li>
+            <li>Sweet Potato</li>
+            <li>Tobacco</li>
+            <li>Tomato</li>
+            <li>Wetland Rice</li>
+            <li>Wheat</li>
+            <li>White Potato</li>
+            <li>Yam</li>
+        </ul>
+        <p>Crops were in part chosen based on data availability. To try to keep our focus on small subsistence farming, the 25 crops were filtered as low-input and rain-fed (rather than irrigated).</p>
+        <p>For each of the above crops, we created a baseline crop calendar that defines various stages of plant development throughout the year for each administrative unit in Ethiopia. These crop calendars were created by projecting different stages of crop development from planting season start days. Each stage of crop development (initial stage, development stage, mid-season stage, and late stage) corresponds to a <i>yield response factor</i>, which is an FAO measure that represents how a reduction in water impacts yield losses. A higher yield response factor corresponds to a higher drought exposure. The resultant calendars show a relative measure of drought exposure for each of the 25 crops within an administrative unit. These calendars were combined and weighted with raw crop production values and subsequently normalized to yield the final Monthly Agriculture Insurance Calendar. </p>
+        <p>MAgIC clearly shows the distribution of drought exposure in Ethiopia. Winter and spring months (approximately November-March) have the least drought exposure, whereas summer and autumn are much more prone to drought. While MAgIC can be displayed graphically, as it is below, mapping drought exposure is important to ascertain its <b>spatial distribution</b>. Click the graphical image to enlarge.</p>
+        <p><a href = "http://i.imgur.com/bI0pMCM.png"><img src="images/eth-cc.png" alt="legend"></a></p>
+    <h2>About the data</h2>
+        <p>Data for crop start days were developed and provided by <a href = "http://gaez.fao.org/Main.html?ticket=ST-96803-5jRRY5f76WfbfJSJ6hXj-cas#">Global Agro-Ecological Zones (GAEZ)</a> under the Food and Agriculture Organization (FAO) and the International Institute for Applied Systems Analysis (IIASA). Crop Production data were gathered and provided by <a href = "http://www.earthstat.org/data-download/">EarthStat</a> from the University of Minnesota Institute on the Environment. Crop stage/yield response factor data were also provided by FAO, as well as Heinemann, et. al. (2009). </p> 
+        <p>Rice Growth Stages: Heinemann, A.B.; Stone, L.F.; Silva, S.C. da. Arroz. In: Monteiro, J.E.B.A. (Ed.). Agrometeorologia dos cultivos: o fator meteorológico na produção agrícola. Brasília: Instituto Nacional de Meteorologia, 2009. p.63‑79.
+        <p>Other Crop Growth Stages: Brouwer, C. and M. Heibloem, Irrigation Water Management Training Manual no. 3: Irrigation Water Needs (Rome: Food and Agricultural Organization, 1986), available from http://www.fao.org/docrep/s2022e/s2022e07.htm#chapter 3: crop water needs</p>
+        <p>Yield Response to Water: Doorenbos, J., and A. H. Kassam. "Yield response to water." Irrigation and drainage paper 33 (Rome: FAO, 1979), available from http://203.200.22.249:8080/jspui/bitstream/2014/11987/1/
+            Yield_response_to_water.pdf.</p>
+        <p>Monthly Agriculture Insurance Calendar: Developed by GlobalAgRisk, Inc. with James Allen, Nathan Arnold, Jason Hartell, Jerzy Jaromczyk, Lauren Oldham, and Jerry Skees.</p>
+        <p>Map authored by <a href = "http://laurenoldham1202.github.io/">Lauren Oldham</a>, June 2016.</p>
+    </div>
+    
+    <div id ='ui-controls'>
+        <label><span class="min">January</span>
+            <span class="max">December</span></label>
+        <input type = 'range' min = '1' max = '12' value = '1', step = '1' class = 'year-slider'> 
+    </div>
+    
+    <div id='user-interaction'>
+        <label>Choose a country:<br></label>
+        <select id="ctry_name">
+            <option value="Armenia" selected>Armenia</option>
+            <option value="Bolivia">Bolivia</option>
+            <option value="Cambodia">Cambodia</option>
+            <option value="Ecuador">Ecuador</option>
+            <option value="Ethiopia">Ethiopia</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Honduras">Honduras</option>
+            <option value="India">India</option>
+            <option value="Kenya">Kenya</option>
+            <option value="Kyrgyzstan">Kyrgyzstan</option>
+            <option value="Malawi">Malawi</option>
+            <option value="Mali">Mali</option>
+            <option value="Mongolia">Mongolia</option>
+            <option value="Burma">Myanmar</option>
+            <option value="Nigeria">Nigeria</option>
+            <option value="Paraguay">Paraguay</option>
+            <option value="Peru">Peru</option>
+            <option value="Philippines">Philippines</option>
+            <option value="Rwanda">Rwanda</option>
+            <option value="Sri Lanka">Sri Lanka</option>
+            <option value="Tajikistan">Tajikistan</option>
+            <option value="Tanzania">Tanzania</option>
+            <option value="Uganda">Uganda</option>
+            <option value="Zambia">Zambia</option>
+        </select>
+    </div>
+    
+    <script>
+        
+         // instantiate the Leaflet map
+        var options = {
+            center: [20, 0],
+            zoom: 2,
+            minZoom: 1,
+            maxZoom: 14,
+            dragging: true,
+            zoomControl: true
+        }
+        var map = L.map('map', options);
+        
+        // load map tiles and add to map
+        var tiles = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            subdomains: 'abcd',
+            maxZoom: 19
+        });
+        map.addLayer(tiles);
+        
+                
+        var dataLayer,
+            attribute = "Armenia";
+        
+        var dataLayerTwo, 
+            attributeTwo = "1";
+        
+        var layerInfo = {
+            arm: {
+                source: "Armenia"
+            }, 
+            bol: {
+                source: "Bolivia"
+            }, 
+            khm: {
+                source: "Cambodia"
+            }
+        };
+        
+        $.getJSON("rock-magic.json", function(regions) {
+            
+            //console.log(regions);
+            
+            dataLayer = L.geoJson(regions, {
+                 style: function(feature) {
+                    return {
+                            color: '#dddddd',
+                            weight: 2,
+                            fillOpacity: 1,
+                            fillColor: '#1f78b4'
+                        };
+                }          
+            }).addTo(map);
+            
+            //buildUI();
+            
+            drawMap(regions);
+            
+            drawInfo();
+              
+        });
+        
+    
+        
+        
+        function drawMap(regions) { //define function
+            
+            dataLayerTwo = L.geoJson(regions, {
+                
+                style: function(feature){
+                    return {
+                        color: 'black', 
+                        weight: 1, 
+                        fillOpacity: 1,
+                        fillColor: '#1f78b4'
+                    }
+                }
+                
+            }).addTo(map);
+            
+            var breaks = getClassBreaks();
+            
+            drawLegend(breaks); //call legend first
+                        
+            updateMap(breaks); //call to update map
+            
+            createSliderUI(breaks); 
+                                
+        }
+        
+        
+        
+        function updateMap(breaks) { //define update map function
+            
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            dataLayerTwo.eachLayer(function(layer) {
+                layer.setStyle( { //set the style for each layer after looping through 
+                    fillColor: getColor(Number(layer.feature.properties[attributeTwo]), breaks)
+                });
+            
+            layer.bindPopup("<b><h5>"+String(layer.feature.properties["admin_name"])+" Region</h5>" + monthNames[Number(attribute)-1] + "</b>: " + layer.feature.properties[attributeTwo].toLocaleString()); //create popup to define each county, the year of interest, and its corresponding unemployment rate    
+                
+                layer.on('mouseover', function() { // create mouseover event
+                    
+                    layer.setStyle({
+                       color: "#E600FF",
+                        weight: 3, 
+                        opacity: .9, 
+                        stroke: true
+                    }); // set affordance stroke color to yellow when hovered over
+                    
+                    $('.info').show(); // shows the right hand display window when moused over
+                    updateInfo(layer, breaks);  // sends layer info to updateInfo function
+                    layer.bringToFront();
+                    
+                });
+                
+                 layer.on('mouseout', function() {
+                    
+                    layer.setStyle({
+                       color: "black", 
+                        weight: 1
+                    }); // set stroke color back to grey when not hovered over
+                   
+                   $('.info').hide(); //  hides info window when not moused over
+                    
+                });
+                
+            }); 
+            
+            //drawLegend(breaks); //call legend first
+
+        }
+        
+        
+        
+        function getClassBreaks() {
+            
+            var values = [];
+            
+            // for all the attribute columns
+            for(var i = 1; i <= 12; i++) {
+                
+                dataLayerTwo.eachLayer(function(layer) {
+                var value = Number(layer.feature.properties[i]);
+                values.push(value);
+                //console.log(value);
+                });
+            }
+  
+            var breaks = ss.quantile(values, [0, .2, 0.4, 0.6, 0.8, 1]);
+              
+            //var breaks = [0, 0.06, 0.12, 0.18, 0.24, 0.3]
+            
+            return breaks;
+                        
+        }
+        
+        
+        
+        
+        
+        function getColor(d, breaks) {
+            if(d <= breaks[1]) {
+                return '#fef0d9';
+            } else if(d <= breaks[2]) {
+                return '#fdcc8a';
+            } else if(d <= breaks[3]) {
+                return '#fc8d59'; 
+            } else if(d <= breaks[4]) {
+                return '#e34a33'; 
+            } else if(d <= breaks[5]) {
+                return '#b30000'
+            } 
+        }
+        
+        
+        
+        
+        
+        function drawLegend(breaks) {
+            
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            var legend = L.control({position: 'topright'});
+
+            legend.onAdd = function(map) {
+                
+                var div = L.DomUtil.create('div', 'legend');
+               
+                return div; // return empty div element
+                      
+            };
+
+            legend.addTo(map);
+
+                  
+            var legend = $('.legend').html("<h3>Drought Exposure: " + monthNames[Number(attributeTwo)-1] + "</h3><ul>"); 
+            
+            for (var i = 0; i < breaks.length-1; i++) {
+            
+                var color = getColor(breaks[i + 1], breaks);
+                $('.legend ul').append(
+                    '<li><span style="background:' + color +  '"></span> ' +
+                     breaks[i].toLocaleString() + ' &mdash; ' + 
+                     breaks[i + 1].toLocaleString() + '</li>');
+            }    
+            legend.append("</ul>");
+            
+        }
+        
+        
+        
+        
+        
+        function createSliderUI(breaks) {
+            
+            // create a Leaflet control object and store a reference to it in a variable
+            var sliderControl = L.control({ position: 'bottomleft'} );
+
+            // when we add this control object to the map
+            sliderControl.onAdd = function(map) {
+
+                // select an existing DOM element with an id of "ui-controls"
+                var slider = L.DomUtil.get("ui-controls");
+
+                    // when the user clicks on the slider element
+                    L.DomEvent.addListener(slider, 'mousedown', function(e) { 
+
+                        // prevent the click event from bubbling up to the map
+                        L.DomEvent.stopPropagation(e); 
+
+                    });
+
+                // return the slider from the onAdd method
+                return slider;
+            }
+
+            // add the control object containing our slider element to the map
+            sliderControl.addTo(map); 
+            
+             var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            $('.year-slider')
+                .on('input change', function () {
+                   attributeTwo = $(this).val();
+                   updateMap(breaks);
+                $('.legend h3').html('Drought Exposure: <br>'+ monthNames[attributeTwo-1])
+            }); 
+            
+        }
+        
+        
+        
+        
+        
+        function drawInfo() { //declare drawinfo function
+            
+            var info = L.control( {position: 'bottomright'} ); // define variable that uses leaflet controls to position the new info window in the bottom right 
+            
+            info.onAdd = function(map) {
+                
+                var div = L.DomUtil.create('div', 'info'); // create new div element of class info
+                
+                return div; 
+            }
+            
+            info.addTo(map); 
+            
+            $('.info').hide(); // use hide method so that the right hand info window is not displayed when you're not hovering over a county
+            
+        }
+        
+        
+        
+        
+        
+        function updateInfo(layer, breaks) { //define updateInfo function
+            
+            var props = layer.feature.properties;  
+            
+            var html = "<h3>"+props["admin_name"]+" Region</h3>";
+            
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            for(var i = 1; i <= 12; i++) {
+                
+                var monthVal = Number(props[String(i)]);
+                
+                html += "<b>" + 
+                    "<span style='color: " + getColor(monthVal, breaks) +
+                    "'>" + monthNames[i-1] + 
+                    "</b>" + ": " + monthVal.toLocaleString() + "<br>";
+                
+            }
+
+            $(".info").html(html); // selecting something with class of info, use html method to select html string for each county we're mousing over
+        }
+        
+        
+        function buildUI() {
+            
+            $('select[id = "ctry_name"]').change(function() { // select the select element with an id of VACANT, use jquery change method to call anonymous function to do whatever you want
+                
+            attribute = ($(this).val()) // update the attribute to the value that the user selected by selecting 'this,' which is the context of the event and using jquery method val to call option value from ui controls
+            
+            //console.log($(this).val());
+            
+            drawMap();
+                
+            }); 
+            
+        }
+        
+        
+       
+
+
+    </script>
+    
+</body>
+
+</html>
