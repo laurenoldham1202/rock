@@ -250,7 +250,10 @@
                     for(var i = 0; i <  layer.feature.properties.ctry_name.length; i++) {
                 
                         if(layer.feature.properties.ctry_name[i] == "Bolivia") {
-                        console.log(this)
+                        console.log(this);
+                            
+                            var bounds = map.getBounds();           
+                            map.fitBounds(bounds);
                         }
                     }
                 });
